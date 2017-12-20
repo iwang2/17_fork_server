@@ -31,10 +31,9 @@ void subserver(int from_client) {
     process(buffer);    
     write(to_client, buffer, sizeof(buffer));
   }
-  /*
+  
   close(to_client);
   close(from_client);
-  */
 }
 
 void process(char * s) {
