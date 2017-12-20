@@ -39,19 +39,19 @@ int server_setup() {
   returns the file descriptor for the downstream pipe.
   =========================*/
 int server_connect(int from_client) {
-  int * to_client;
+  int to_client;
   char buffer[HANDSHAKE_BUFFER_SIZE];
 
   read(from_client, buffer, sizeof(buffer));
   
   //connect to client, send message
-  *to_client = open(buffer, O_WRONLY, 0);
-  write(*to_client, buffer, sizeof(buffer));
+  to_client = open(buffer, O_WRONLY);
+  write(to_client, buffer, sizeof(buffer));
 
   read(from_client, buffer, sizeof(buffer));
   printf("[server] handshake complete: %s\n", buffer);
   
-  return * to_client;
+  return to_client;
 }
 
 /*=========================
