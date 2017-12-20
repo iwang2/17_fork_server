@@ -12,10 +12,11 @@ static void sighandler(int signo) {
 }
 
 int main() {
-  int from_client, f;
-  while (from_client = server_setup()) {
-    f = fork();
-    if(!f){
+  signal(SIGINT, sighandler);
+  
+  while(1) {
+    int from_client = server_setup();
+    if(!fork()) {
       subserver(from_client);
       exit(0);
     }
@@ -27,13 +28,13 @@ void subserver(int from_client) {
   char buffer[BUFFER_SIZE];
   
   while (read(from_client, buffer, sizeof(buffer))) {
-    
-    printf("[server] received: %s\n", buffer);
-    process(buffer);
-    printf("[server] modified: %s\n", buffer);
-    
+    process(buffer);    
     write(to_client, buffer, sizeof(buffer));
   }
+  /*
+  close(to_client);
+  close(from_client);
+  */
 }
 
 void process(char * s) {

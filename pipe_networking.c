@@ -13,14 +13,10 @@
   =========================*/
 int server_setup() {
   mkfifo("luigi", 0600);
-
-  int from_client;
-  char buffer[HANDSHAKE_BUFFER_SIZE];
   
   //block on open, recieve mesage
   printf("[server] handshake: making wkp\n");
-  from_client = open("luigi", O_RDONLY);
-  //read(from_client, buffer, sizeof(buffer));
+  int from_client = open("luigi", O_RDONLY);
   printf("[server] connection made\n");
 
   remove("luigi");
@@ -39,19 +35,18 @@ int server_setup() {
   returns the file descriptor for the downstream pipe.
   =========================*/
 int server_connect(int from_client) {
-  int * to_client;
+  int to_client;
   char buffer[HANDSHAKE_BUFFER_SIZE];
 
   read(from_client, buffer, sizeof(buffer));
+  to_client = open(buffer, O_WRONLY);
   
-  //connect to client, send message
-  *to_client = open(buffer, O_WRONLY, 0);
-  write(*to_client, buffer, sizeof(buffer));
-
+  write(to_client, buffer, sizeof(buffer));
+  
   read(from_client, buffer, sizeof(buffer));
   printf("[server] handshake complete: %s\n", buffer);
   
-  return * to_client;
+  return to_client;
 }
 
 /*=========================
